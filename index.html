@@ -654,25 +654,35 @@
             const raycaster = new THREE.Raycaster();
             const mouse = new THREE.Vector2();
 
-            function onObjectClick(event) {
-                if (infoPanel.contains(event.target)) return;
-                mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-                mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
-                raycaster.setFromCamera(mouse, camera);
-                
-                const allClickableObjects = celestialObjects.map(o => o.mesh);
-                if(moon) allClickableObjects.push(moon);
+function onObjectClick(event) {
+    if (infoPanel.contains(event.target)) return;
 
-                const intersects = raycaster.intersectObjects(allClickableObjects, true);
-
-                if (intersects.length > 0 && intersects[0].object.userData.isPlanet) {
-                    currentPlanetData = intersects[0].object.userData;
-                    planetNameEl.innerText = currentPlanetData.name;
-                    planetInfoEl.innerText = currentPlanetData.info;
-            storyBtn.style.display = 'inline-block';
-            infoPanel.classList.add('visible');
-        }
+    let clientX, clientY;
+    if (event.touches && event.touches.length > 0) {
+        clientX = event.touches[0].clientX;
+        clientY = event.touches[0].clientY;
+    } else {
+        clientX = event.clientX;
+        clientY = event.clientY;
     }
+
+    mouse.x = (clientX / window.innerWidth) * 2 - 1;
+    mouse.y = - (clientY / window.innerHeight) * 2 + 1;
+    raycaster.setFromCamera(mouse, camera);
+    
+    const allClickableObjects = celestialObjects.map(o => o.mesh);
+    if(moon) allClickableObjects.push(moon);
+
+    const intersects = raycaster.intersectObjects(allClickableObjects, true);
+
+    if (intersects.length > 0 && intersects[0].object.userData.isPlanet) {
+        currentPlanetData = intersects[0].object.userData;
+        planetNameEl.innerText = currentPlanetData.name;
+        planetInfoEl.innerText = currentPlanetData.info;
+        storyBtn.style.display = 'inline-block';
+        infoPanel.classList.add('visible');
+    }
+}
 
     closeBtn.addEventListener('click', () => {
         infoPanel.classList.remove('visible');
@@ -766,7 +776,14 @@
         }
     });
 
-            window.addEventListener('click', onObjectClick, false);
+window.addEventListener('click', onObjectClick, false);
+
+// Add touch event listener for mobile devices to support planet clicks
+window.addEventListener('touchstart', function(event) {
+    // Prevent default to avoid duplicate events
+    event.preventDefault();
+    onObjectClick(event);
+}, { passive: false });
 
             // --- Animation Loop ---
             const clock = new THREE.Clock();
