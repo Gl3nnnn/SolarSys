@@ -780,9 +780,14 @@ window.addEventListener('click', onObjectClick, false);
 
 // Add touch event listener for mobile devices to support planet clicks
 window.addEventListener('touchstart', function(event) {
-    // Prevent default to avoid duplicate events
-    event.preventDefault();
-    onObjectClick(event);
+    // Only trigger onObjectClick if touch is outside the info panel and its interactive children
+    const infoPanel = document.getElementById('info-panel');
+    const target = event.target;
+    if (!infoPanel.contains(target) && !target.closest('#ask-btn') && !target.closest('#question-input') && !target.closest('#story-btn')) {
+        // Prevent default to avoid duplicate events
+        event.preventDefault();
+        onObjectClick(event);
+    }
 }, { passive: false });
 
             // --- Animation Loop ---
