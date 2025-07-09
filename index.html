@@ -182,13 +182,19 @@
         border: 1px solid rgba(138, 43, 226, 0.4);
         border-radius: 1rem;
         padding: 1.2rem;
-        display: flex;
+        display: none; /* Ensure hidden on load */
         flex-direction: column;
         box-shadow:
             0 10px 20px rgba(0, 0, 0, 0.8),
             0 0 30px rgba(138, 43, 226, 0.6),
             inset 0 0 20px rgba(255, 255, 255, 0.1);
         z-index: 100;
+        pointer-events: auto; /* Enable pointer events */
+    }
+
+    #info-panel.visible {
+        display: flex; /* Show when visible */
+        pointer-events: auto; /* Enable pointer events */
     }
 
     #info-panel h2 {
@@ -219,6 +225,20 @@
         height: 2rem;
         font-size: 1rem;
         line-height: 2rem;
+        pointer-events: auto; /* Enable pointer events */
+        cursor: pointer;
+        background: rgba(138, 43, 226, 0.4);
+        border: none;
+        color: #fff;
+        border-radius: 50%;
+        box-shadow: 0 0 12px rgba(138, 43, 226, 0.8);
+        transition: background-color 0.4s, box-shadow 0.4s, transform 0.4s;
+    }
+
+    #close-btn:hover {
+        background: rgba(138, 43, 226, 0.8);
+        box-shadow: 0 0 28px rgba(138, 43, 226, 1);
+        transform: translateZ(20px) scale(1.2) rotateY(10deg);
     }
 }
 
@@ -655,6 +675,17 @@
     }
 
     closeBtn.addEventListener('click', () => {
+        infoPanel.classList.remove('visible');
+        storyLoader.style.display = 'none';
+        storyBtn.disabled = false;
+        answerSection.innerText = '';
+        questionInput.value = '';
+        askBtn.disabled = false;
+    });
+
+    // Add touch event listener for mobile devices
+    closeBtn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
         infoPanel.classList.remove('visible');
         storyLoader.style.display = 'none';
         storyBtn.disabled = false;
